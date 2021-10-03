@@ -6,6 +6,7 @@ let snake_y=0;
 let snake_color;
 let cell_color;
 
+
 let food_x=0;
 let food_y=0;
 let food_color;
