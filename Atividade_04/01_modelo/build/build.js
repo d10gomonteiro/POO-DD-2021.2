@@ -33,10 +33,18 @@ var Board = (function () {
 var wolf_img;
 var wolf_imgin;
 var rabbit_img;
+var fruit_img;
+var armadilha_img;
 var board_img;
+var fruit;
+var armadilha;
 var wolf;
 var rabbit;
 var board;
+var score_coelho = 0;
+var score_lobo = 0;
+var a = 0;
+var n_armadilhas = 0;
 function loadImage(path) {
     return loadImage(path, function () { return console.log("loading " + path + "sucesso"); }, function () { return console.log("loading " + path + "falhou"); });
 }
@@ -44,6 +52,8 @@ function preload() {
     wolf_img = loadImage("../sketch/lobo.png");
     wolf_imgin = loadImage("../sketch/loboinv.png");
     rabbit_img = loadImage("../sketch/coelho.png");
+    fruit_img = loadImage("../sketch/frutas.png");
+    armadilha_img = loadImage("/sketch/armadilha.png");
     board_img = loadImage("../sketch/arena1.jpg");
 }
 function keyPressed() {
@@ -73,19 +83,33 @@ function keyPressed() {
     else if (keyCode === "S".charCodeAt(0)) {
         rabbit.y++;
     }
+    if (keyCode === "F".charCodeAt(0)) {
+        armadilha.x = rabbit.x;
+        armadilha.y = rabbit.y;
+    }
 }
 function setup() {
     var size = 100;
     wolf = new Entity(2, 2, size, wolf_img);
     rabbit = new Entity(1, 1, size, rabbit_img);
+    fruit = new Entity(3, 5, size, fruit_img);
+    armadilha = new Entity(5, 6, size, armadilha_img);
     board = new Board(5, 6, size, board_img);
     createCanvas(board.nc * size, board.nl * size);
 }
 function draw() {
     board.draw();
+    text("score do Coelho: " + score_coelho, 5, 50);
+    text("score do Lobo: " + score_lobo, 5, 35);
+    text("O primeiro que fazer 500 pontos ganha!", 5, 20);
+    text("Você sairá em: " + a, 5, 100);
     wolf.draw();
     rabbit.draw();
+    fruit.draw();
+    armadilha.draw();
+    score();
     borda();
+    lobo_armadilha();
     function borda() {
         if (wolf.y <= 0)
             wolf.y = 0;
@@ -95,6 +119,34 @@ function draw() {
             wolf.x = 0;
         if (wolf.x >= board.nc)
             wolf.x = board.nc - 1;
+        if (rabbit.y <= 0)
+            rabbit.y = 0;
+        if (rabbit.y >= board.nl)
+            rabbit.y = board.nl - 1;
+        if (rabbit.x <= 0)
+            rabbit.x = 0;
+        if (rabbit.x >= board.nc)
+            rabbit.x = board.nc - 1;
+    }
+    function score() {
+        if (rabbit.x === fruit.x && rabbit.y === fruit.y) {
+            score_coelho = score_coelho + 1;
+        }
+        if (rabbit.x === wolf.x && rabbit.y === wolf.y) {
+            score_lobo = score_lobo + 1;
+        }
+    }
+    function lobo_armadilha() {
+        if (wolf.x === armadilha.x && wolf.y === armadilha.y) {
+            wolf.x == armadilha.x;
+            wolf.y == armadilha.y;
+            for (a == 100; a >= 0; a--) {
+                if (a === 0) {
+                    armadilha.x = null;
+                    armadilha.y = null;
+                }
+            }
+        }
     }
 }
 //# sourceMappingURL=build.js.map
