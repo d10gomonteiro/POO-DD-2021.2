@@ -36,15 +36,15 @@ var rabbit_img;
 var fruit_img;
 var armadilha_img;
 var board_img;
+var pedra_img;
 var fruit;
 var armadilha;
 var wolf;
 var rabbit;
+var pedra;
 var board;
 var score_coelho = 0;
 var score_lobo = 0;
-var a = 0;
-var n_armadilhas = 0;
 function loadImage(path) {
     return loadImage(path, function () { return console.log("loading " + path + "sucesso"); }, function () { return console.log("loading " + path + "falhou"); });
 }
@@ -54,6 +54,7 @@ function preload() {
     rabbit_img = loadImage("../sketch/coelho.png");
     fruit_img = loadImage("../sketch/frutas.png");
     armadilha_img = loadImage("/sketch/armadilha.png");
+    pedra_img = loadImage("/sketch/pedra.png");
     board_img = loadImage("../sketch/arena1.jpg");
 }
 function keyPressed() {
@@ -87,12 +88,17 @@ function keyPressed() {
         armadilha.x = rabbit.x;
         armadilha.y = rabbit.y;
     }
+    if (keyCode === "M".charCodeAt(0)) {
+        pedra.x = wolf.x;
+        pedra.y = wolf.y;
+    }
 }
 function setup() {
     var size = 100;
-    wolf = new Entity(2, 2, size, wolf_img);
+    wolf = new Entity(2, 5, size, wolf_img);
     rabbit = new Entity(1, 1, size, rabbit_img);
     fruit = new Entity(3, 5, size, fruit_img);
+    pedra = new Entity(5, 6, size, pedra_img);
     armadilha = new Entity(5, 6, size, armadilha_img);
     board = new Board(5, 6, size, board_img);
     createCanvas(board.nc * size, board.nl * size);
@@ -101,15 +107,17 @@ function draw() {
     board.draw();
     text("score do Coelho: " + score_coelho, 5, 50);
     text("score do Lobo: " + score_lobo, 5, 35);
+    textSize(15);
     text("O primeiro que fazer 500 pontos ganha!", 5, 20);
-    text("Você sairá em: " + a, 5, 100);
     wolf.draw();
     rabbit.draw();
     fruit.draw();
+    pedra.draw();
     armadilha.draw();
     score();
     borda();
-    lobo_armadilha();
+    barreira();
+    lobo_preso();
     function borda() {
         if (wolf.y <= 0)
             wolf.y = 0;
@@ -135,17 +143,23 @@ function draw() {
         if (rabbit.x === wolf.x && rabbit.y === wolf.y) {
             score_lobo = score_lobo + 1;
         }
+        if (score_coelho >= 500) {
+            text("O coelho venceu!", 200, 300);
+        }
+        if (score_lobo >= 500) {
+            text("O lobo venceu!", 200, 300);
+        }
     }
-    function lobo_armadilha() {
-        if (wolf.x === armadilha.x && wolf.y === armadilha.y) {
-            wolf.x == armadilha.x;
-            wolf.y == armadilha.y;
-            for (a == 100; a >= 0; a--) {
-                if (a === 0) {
-                    armadilha.x = null;
-                    armadilha.y = null;
-                }
-            }
+    function barreira() {
+        if (rabbit.y == pedra.y && rabbit.x == pedra.x) {
+            rabbit.y = pedra.y - 1;
+            rabbit.x = pedra.x + 1;
+        }
+    }
+    function lobo_preso() {
+        if (wolf.y == armadilha.y && wolf.x == armadilha.x) {
+            wolf.y = armadilha.y;
+            wolf.x = armadilha.x;
         }
     }
 }

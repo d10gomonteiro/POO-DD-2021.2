@@ -53,17 +53,18 @@ let rabbit_img: p5.Image;
 let fruit_img: p5.Image;
 let armadilha_img: p5.Image;
 let board_img: p5.Image;
+let pedra_img: p5.Image;
 
 let fruit: Entity;
 let armadilha: Entity;
 let wolf: Entity;
 let rabbit: Entity;
+let pedra: Entity;
 let board: Board;
+
 
 let score_coelho: number = 0;
 let score_lobo: number = 0;
-let a: number = 0;
-let n_armadilhas: number = 0;
 
 
 function loadImage(path: string): p5.Image{
@@ -80,6 +81,7 @@ function preload() {
   rabbit_img = loadImage("../sketch/coelho.png");
   fruit_img = loadImage("../sketch/frutas.png");
   armadilha_img = loadImage("/sketch/armadilha.png");
+  pedra_img = loadImage("/sketch/pedra.png");
   board_img = loadImage("../sketch/arena1.jpg");
 
 }
@@ -112,13 +114,18 @@ function keyPressed(){
     armadilha.y = rabbit.y;
   }
 
+  if(keyCode=== "M".charCodeAt(0)){
+    pedra.x = wolf.x;
+    pedra.y = wolf.y;
+  }
 }
 
 function setup() {
   let size = 100;
-  wolf = new Entity(2, 2, size, wolf_img);
+  wolf = new Entity(2, 5, size, wolf_img);
   rabbit = new Entity(1, 1, size, rabbit_img);
   fruit = new Entity(3, 5, size, fruit_img);
+  pedra = new Entity(5, 6, size, pedra_img);
   armadilha = new Entity(5, 6, size, armadilha_img);
   board = new Board(5, 6, size, board_img);
 
@@ -130,15 +137,18 @@ function draw() {
   board.draw(); 
   text("score do Coelho: " + score_coelho, 5, 50);
   text("score do Lobo: " + score_lobo, 5, 35);
+  textSize(15);
   text("O primeiro que fazer 500 pontos ganha!", 5, 20);
-  text("Você sairá em: " + a, 5, 100);
+ // text("Você sairá em: " + a, 5, 100);
   wolf.draw();
   rabbit.draw();
   fruit.draw();
+  pedra.draw();
   armadilha.draw();
   score();
   borda();
-  lobo_armadilha();
+  barreira();
+  lobo_preso();
 
 function borda(){
     //lobo
@@ -164,6 +174,7 @@ function borda(){
      rabbit.x=0;
     if(rabbit.x>=board.nc)
       rabbit.x=board.nc-1;
+
     }
 function score(){
     if(rabbit.x===fruit.x && rabbit.y === fruit.y){
@@ -172,26 +183,29 @@ function score(){
     if(rabbit.x===wolf.x && rabbit.y === wolf.y){
       score_lobo = score_lobo+1;
     }
+
+    if(score_coelho>=500){
+      text("O coelho venceu!", 200, 300);
+    }
+    if(score_lobo>=500){
+      text("O lobo venceu!", 200, 300);
+    }
   }
-
-function lobo_armadilha(){
-    if(wolf.x===armadilha.x && wolf.y === armadilha.y){
-      wolf.x==armadilha.x;
-      wolf.y==armadilha.y;
-        for(a == 100; a >=0; a--){
-          if(a === 0){
-          armadilha.x = null;
-          armadilha.y = null;
-          }
-        }
-
-  }
-
-}
-    
-
-
-    
+function barreira(){
+    if(rabbit.y==pedra.y && rabbit.x==pedra.x){
+    rabbit.y=pedra.y-1;
+    rabbit.x=pedra.x+1;
+    }
 }
 
-//timer: proteger a comidar por X tempo
+function lobo_preso(){
+  if(wolf.y==armadilha.y && wolf.x==armadilha.x){
+    wolf.y=armadilha.y;
+    wolf.x=armadilha.x;
+    }
+}
+
+}
+
+
+//timer: proteger a comida por X tempo
