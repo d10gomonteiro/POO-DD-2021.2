@@ -24,21 +24,25 @@ class Moto {
         this.power = 1;
         this.time = 0;
     }
-    public buy(time:number){
+    public buy(time:number): number{
         this.time += 5;
+        return time;
     }
-    public gasto(){
+    public gasto(): number{
+
         this.time-=1;
+        return this.time;
     }
-    public drive(time:number): boolean{
-        if(this.pessoa==null)
+    public drive(time:number, metros:number): boolean{
+        if(this.pessoa==null){
             console.log("não tem ninguem para dirigir");
             return false;
-
-        let gast = this.moto.gasto()*metros;
-        if(gast <= this.moto.time){
-            this.moto.time -= gast;
         }
+        else if(this.pessoa.idade <= 10 && time > 0){
+            console.log ("pode passear");
+            return true;
+        }
+        
         
     }
 
@@ -67,4 +71,8 @@ class Moto {
     toString(): string {
         return "Pessoa: " + this.idade + ":" + this.nome;
     }
+}
+
+class main{
+    
 }
