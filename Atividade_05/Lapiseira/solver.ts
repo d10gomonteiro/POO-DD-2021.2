@@ -23,6 +23,7 @@ class Moto {
         this.pessoa = null;
         this.power = 1;
         this.time = 0;
+
     }
     public buy(time:number): number{
         this.time += 5;
@@ -38,11 +39,16 @@ class Moto {
             console.log("não tem ninguem para dirigir");
             return false;
         }
-        else if(this.pessoa.idade <= 10 && time > 0){
+        if(this.pessoa.idade <= 10){
             console.log ("pode passear");
             return true;
         }
-        
+        if(this.time < time){
+            console.log("tempo insuficiente");
+            return false;
+        }
+        this.time -= time;
+        return true;
         
     }
 
@@ -64,15 +70,21 @@ class Moto {
         this.pessoa = null;
         return pessoa;
     }
-    public honk(){
+    public honk(): string{
+        let saida = "P";
+        for(let i = 0; i < this.power; i++)
+            saida +="e";
+        return 
 
     }
 
     toString(): string {
-        return "Pessoa: " + this.idade + ":" + this.nome;
+        if(this.pessoa != null)
+            return `[${this.pessoa.nome}]`
+        return "moto vazia";
     }
 }
 
-class main{
-    
+class Main{
+
 }
