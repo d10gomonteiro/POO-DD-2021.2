@@ -57,5 +57,29 @@ class Board{
 }
 
 class Game{
+  activeFuction: () => void;
+  board: Board;
+
+  constructor(){
+
+  }
+  gameplay(){
+
+  }
+  gameOver(): void{
+
+  }
+
+}
+
+let game: Game;
+
+function setup(){
+
+}
+function keyPressed(){
+
+}
+function draw(){
   
 }
