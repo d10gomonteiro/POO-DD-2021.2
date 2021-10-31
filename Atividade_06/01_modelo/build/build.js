@@ -1,166 +1,115 @@
-var Entity = (function () {
-    function Entity(x, y, step, image) {
+var Bubble = (function () {
+    function Bubble(x, y, letter, speed) {
+        this.alive = true;
         this.x = x;
         this.y = y;
-        this.step = step;
-        this.image = image;
+        this.letter = letter;
+        this.speed = speed;
     }
-    Entity.prototype.draw = function () {
-        image(this.image, this.x * this.step, this.y * this.step, this.step, this.step);
+    Bubble.prototype.update = function () {
+        this.y += this.speed;
     };
-    return Entity;
+    Bubble.prototype.draw = function () {
+        fill(random(255), random(255), random(255));
+        stroke(random(256));
+        circle(this.x, this.y, 2 * Bubble.radius);
+        fill(0);
+        stroke(0);
+        textSize(15);
+        text(this.letter, this.x - 5, this.y + 5);
+    };
+    Bubble.radius = 20;
+    return Bubble;
 }());
 var Board = (function () {
-    function Board(nc, nl, step, background) {
-        this.nc = nc;
-        this.nl = nl;
-        this.step = step;
-        this.background = background;
+    function Board() {
+        this.timeout = 30;
+        this.timer = 0;
+        this.bubbles = [new Bubble(100, 100, "a", 1)];
+        this.bubbles.push(new Bubble(200, 100, "b", 2));
+        this.bubbles.push(new Bubble(300, 100, "c", 3));
     }
-    Board.prototype.draw = function () {
-        image(this.background, 0, 0, this.nc * this.step, this.nl * this.step);
-        for (var x = 0; x < this.nc; x++) {
-            for (var y = 0; y < this.nl; y++) {
-                noFill();
-                stroke(0);
-                strokeWeight(2);
-                rect(x * this.step, y * this.step, this.step, this.step);
-            }
+    Board.prototype.update = function () {
+        this.checkBubbleTime();
+        this.markOutsideBubble();
+        for (var _i = 0, _a = this.bubbles; _i < _a.length; _i++) {
+            var bubble = _a[_i];
+            bubble.update();
         }
+        this.removeDeadBubble();
+    };
+    Board.prototype.draw = function () {
+        stroke("white");
+        fill("white");
+        textSize(30);
+        text("Ativas: " + this.bubbles.length, 30, 30);
+        for (var _i = 0, _a = this.bubbles; _i < _a.length; _i++) {
+            var bubble = _a[_i];
+            bubble.draw();
+        }
+    };
+    Board.prototype.removeDeadBubble = function () {
+        this.bubbles = this.bubbles.filter(function (b) { return b.alive; });
+    };
+    Board.prototype.removeByHit = function (code) {
+        for (var _i = 0, _a = this.bubbles; _i < _a.length; _i++) {
+            var bubble = _a[_i];
+            if (bubble.letter[0].toUpperCase().charCodeAt(0) == code)
+                bubble.alive = false;
+        }
+    };
+    Board.prototype.markOutsideBubble = function () {
+        for (var _i = 0, _a = this.bubbles; _i < _a.length; _i++) {
+            var bubble = _a[_i];
+            if (bubble.y + 2 * Bubble.radius >= height)
+                bubble.alive = false;
+        }
+    };
+    Board.prototype.checkBubbleTime = function () {
+        this.timer -= 1;
+        if (this.timer <= 0) {
+            this.addBubble();
+            this.timer = this.timeout;
+        }
+    };
+    Board.prototype.addBubble = function () {
+        var x = random(0, width - 2 * Bubble.radius);
+        var y = -2 * Bubble.radius;
+        var letter = random(["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]);
+        var speed = random(1, 5);
+        var bubble = new Bubble(x, y, letter, speed);
+        this.bubbles.push(bubble);
     };
     return Board;
 }());
-var wolf_img;
-var wolf_imgin;
-var rabbit_img;
-var fruit_img;
-var armadilha_img;
-var board_img;
-var pedra_img;
-var fruit;
-var armadilha;
-var wolf;
-var rabbit;
-var pedra;
-var board;
-var score_coelho = 0;
-var score_lobo = 0;
-function loadImage(path) {
-    return loadImage(path, function () { return console.log("loading " + path + "sucesso"); }, function () { return console.log("loading " + path + "falhou"); });
-}
-function preload() {
-    wolf_img = loadImage("../sketch/lobo.png");
-    wolf_imgin = loadImage("../sketch/loboinv.png");
-    rabbit_img = loadImage("../sketch/coelho.png");
-    fruit_img = loadImage("../sketch/frutas.png");
-    armadilha_img = loadImage("/sketch/armadilha.png");
-    pedra_img = loadImage("/sketch/pedra.png");
-    board_img = loadImage("../sketch/arena1.jpg");
-}
-function keyPressed() {
-    if (keyCode === LEFT_ARROW) {
-        wolf.x--;
-        wolf.image = wolf_imgin;
+var Game = (function () {
+    function Game() {
+        this.board = new Board();
+        this.activeState = this.gamePlay;
     }
-    else if (keyCode === RIGHT_ARROW) {
-        wolf.x++;
-        wolf.image = wolf_img;
-    }
-    else if (keyCode === UP_ARROW) {
-        wolf.y--;
-    }
-    else if (keyCode === DOWN_ARROW) {
-        wolf.y++;
-    }
-    if (keyCode === "A".charCodeAt(0)) {
-        rabbit.x--;
-    }
-    else if (keyCode === "D".charCodeAt(0)) {
-        rabbit.x++;
-    }
-    else if (keyCode === "W".charCodeAt(0)) {
-        rabbit.y--;
-    }
-    else if (keyCode === "S".charCodeAt(0)) {
-        rabbit.y++;
-    }
-    if (keyCode === "F".charCodeAt(0)) {
-        armadilha.x = rabbit.x;
-        armadilha.y = rabbit.y;
-    }
-    if (keyCode === "M".charCodeAt(0)) {
-        pedra.x = wolf.x;
-        pedra.y = wolf.y;
-    }
-}
+    Game.prototype.gamePlay = function () {
+        this.board.update();
+        background(0, 124, 90);
+        this.board.draw();
+    };
+    Game.prototype.gameOver = function () {
+        background(255, 0, 0);
+        fill(random(256), random(256), random(256));
+        textSize(100);
+        text("Game Over", 50, 300);
+    };
+    return Game;
+}());
+var game;
 function setup() {
-    var size = 100;
-    wolf = new Entity(2, 5, size, wolf_img);
-    rabbit = new Entity(1, 1, size, rabbit_img);
-    fruit = new Entity(3, 5, size, fruit_img);
-    pedra = new Entity(5, 6, size, pedra_img);
-    armadilha = new Entity(5, 6, size, armadilha_img);
-    board = new Board(5, 6, size, board_img);
-    createCanvas(board.nc * size, board.nl * size);
+    createCanvas(800, 600);
+    frameRate(30);
+    game = new Game();
 }
 function draw() {
-    board.draw();
-    text("score do Coelho: " + score_coelho, 5, 50);
-    text("score do Lobo: " + score_lobo, 5, 35);
-    textSize(15);
-    text("O primeiro que fazer 500 pontos ganha!", 5, 20);
-    wolf.draw();
-    rabbit.draw();
-    fruit.draw();
-    pedra.draw();
-    armadilha.draw();
-    score();
-    borda();
-    barreira();
-    lobo_preso();
-    function borda() {
-        if (wolf.y <= 0)
-            wolf.y = 0;
-        if (wolf.y >= board.nl)
-            wolf.y = board.nl - 1;
-        if (wolf.x <= 0)
-            wolf.x = 0;
-        if (wolf.x >= board.nc)
-            wolf.x = board.nc - 1;
-        if (rabbit.y <= 0)
-            rabbit.y = 0;
-        if (rabbit.y >= board.nl)
-            rabbit.y = board.nl - 1;
-        if (rabbit.x <= 0)
-            rabbit.x = 0;
-        if (rabbit.x >= board.nc)
-            rabbit.x = board.nc - 1;
-    }
-    function score() {
-        if (rabbit.x === fruit.x && rabbit.y === fruit.y) {
-            score_coelho = score_coelho + 1;
-        }
-        if (rabbit.x === wolf.x && rabbit.y === wolf.y) {
-            score_lobo = score_lobo + 1;
-        }
-        if (score_coelho >= 500) {
-            text("O coelho venceu!", 200, 300);
-        }
-        if (score_lobo >= 500) {
-            text("O lobo venceu!", 200, 300);
-        }
-    }
-    function barreira() {
-        if (rabbit.y == pedra.y && rabbit.x == pedra.x) {
-            rabbit.y = pedra.y - 1;
-            rabbit.x = pedra.x + 1;
-        }
-    }
-    function lobo_preso() {
-        if (wolf.y == armadilha.y && wolf.x == armadilha.x) {
-            wolf.y = armadilha.y;
-            wolf.x = armadilha.x;
-        }
-    }
+    game.activeState();
+}
+function keyPressed() {
+    game.board.removeByHit(keyCode);
 }
 //# sourceMappingURL=build.js.map
