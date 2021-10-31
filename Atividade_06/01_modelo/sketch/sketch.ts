@@ -33,6 +33,8 @@ class Bubble{
 class Board{
   timeout: number = 30;
   timer: number = 0;
+  hits = 0;
+  mistakes = 0;
   bubbles: Bubble[];
   
   constructor(){
@@ -54,9 +56,9 @@ class Board{
     stroke("white");
     fill("white");
     textSize(30);
-    text("Ativas: " + this.bubbles.length, 30, 30);
+    text("hits: "+ this.hits + " Mistakes: " +this.mistakes, 30, 30);
     for (let bubble of this.bubbles)
-    bubble.draw();
+      bubble.draw();
   }
   removeDeadBubble(): void{
     this.bubbles=this.bubbles.filter(b=>b.alive);
@@ -71,12 +73,16 @@ class Board{
     for( let bubble of this.bubbles)
       if(bubble.letter[0].toUpperCase().charCodeAt(0) == code)
         bubble.alive = false;
+        this.hits++;
+      //  break;
   }
 
   markOutsideBubble(): void{
     for (let bubble of this.bubbles)
       if(bubble.y+2*Bubble.radius >= height)
         bubble.alive=false;
+        this.mistakes++;
+
   }
 
   checkBubbleTime(): void{
@@ -112,8 +118,8 @@ class Game{
     this.board.update();
     background(0, 124, 90);
     this.board.draw();
-  //  if (random(50)< 1)
-  //    this.activeState = this.gameOver;
+    if (this.board.mistakes > 5)
+      this.activeState = this.gameOver;
   }
 
   gameOver(): void{

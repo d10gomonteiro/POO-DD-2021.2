@@ -25,6 +25,8 @@ var Board = (function () {
     function Board() {
         this.timeout = 30;
         this.timer = 0;
+        this.hits = 0;
+        this.mistakes = 0;
         this.bubbles = [new Bubble(100, 100, "a", 1)];
         this.bubbles.push(new Bubble(200, 100, "b", 2));
         this.bubbles.push(new Bubble(300, 100, "c", 3));
@@ -42,7 +44,7 @@ var Board = (function () {
         stroke("white");
         fill("white");
         textSize(30);
-        text("Ativas: " + this.bubbles.length, 30, 30);
+        text("hits: " + this.hits + " Mistakes: " + this.mistakes, 30, 30);
         for (var _i = 0, _a = this.bubbles; _i < _a.length; _i++) {
             var bubble = _a[_i];
             bubble.draw();
@@ -57,6 +59,7 @@ var Board = (function () {
             if (bubble.letter[0].toUpperCase().charCodeAt(0) == code)
                 bubble.alive = false;
         }
+        this.hits++;
     };
     Board.prototype.markOutsideBubble = function () {
         for (var _i = 0, _a = this.bubbles; _i < _a.length; _i++) {
@@ -64,6 +67,7 @@ var Board = (function () {
             if (bubble.y + 2 * Bubble.radius >= height)
                 bubble.alive = false;
         }
+        this.mistakes++;
     };
     Board.prototype.checkBubbleTime = function () {
         this.timer -= 1;
@@ -91,6 +95,8 @@ var Game = (function () {
         this.board.update();
         background(0, 124, 90);
         this.board.draw();
+        if (this.board.mistakes > 5)
+            this.activeState = this.gameOver;
     };
     Game.prototype.gameOver = function () {
         background(255, 0, 0);
