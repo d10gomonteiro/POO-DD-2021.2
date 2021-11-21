@@ -48,21 +48,19 @@ class Tamagochi {
     public comendo(): void{
         if(this.saciedade< this.saciedadeMax){
             this.saciedade++;
+            this.limpeza--;
             this.diamantes++;
             this.idade++;
         }
+        console.log("Ele está sem fome");
     }
     public brincando(): void{
         this.energia--;
         this.limpeza--;
         this.diamantes++;
         this.idade++;
-
-        if(this.energia= 0){
-            console.log("Seu pet morreu sem energia!");
-        }
-        if(this.limpeza= 0){
-            console.log("Seu pet morreu de tanta sujeira!");
+        if(this.energia==this.energiaMax-1){
+            console.log("cuidado, seu pet está muito cansado");
         }
     }
     public banhando(): void{
@@ -89,6 +87,5 @@ class Tamagochi {
 
 }
 
-class Jogo{
-
-}
+    Tamagochi pet = new Tamagochi(10, 10, 10);
+    pet.comendo();
