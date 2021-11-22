@@ -1,18 +1,18 @@
 class Tamagochi {
     private idade: number= 0;
     private vivo: boolean;
-    private limpoMax: number;
+    private limpoMax: number=10;
     private limpeza: number;
     private diamantes: number= 0;
     private energia: number;
-    private energiaMax: number;
+    private energiaMax: number=10;
     private saciedade: number;
-    private saciedadeMax: number;
+    private saciedadeMax: number=10;
 
     constructor (energia: number, saciedade:number, limpeza: number) {
-        this.energia = this.energiaMax;
-        this.saciedade = this.saciedadeMax;
-        this.limpeza = this.limpoMax;
+        this.energiaMax = energia;
+        this.saciedadeMax = saciedade;
+        this.limpoMax = limpeza;
     }
 
 
@@ -86,6 +86,15 @@ class Tamagochi {
     }
 
 }
-
-    Tamagochi pet = new Tamagochi(10, 10, 10);
+class Jogo{
+    Tamagochi pet= new Tamagochi(10, 10, 10);
+    console.log(pet);
     pet.comendo();
+    console.log("Seu pet está comendo");
+    pet.brincando();
+    console.log("Seu pet está brincando");
+    pet.banhando();
+    console.log("Seu pet está tomando banho");
+    pet.dormindo();
+    console.log("Seu pet está dormindo");
+}
