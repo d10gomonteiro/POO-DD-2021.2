@@ -87,7 +87,7 @@ class Tamagochi {
 
 }
 class Jogo{
-    Tamagochi pet= new Tamagochi(10, 10, 10);
+    let pet = new Tamagochi(10, 10, 10);
     console.log(pet);
     pet.comendo();
     console.log("Seu pet está comendo");
