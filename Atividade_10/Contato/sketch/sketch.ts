@@ -1,122 +1,136 @@
 class Fone {
-  constructor(private number: string, private label: string) { }
-  public toString(): string {
-      return this.label + ":" + this.number;
-  }
-  public static validate(): boolean {
-      let valid = "0123456789()-.";
-      for (let i = 0; i < this.number.length; i++) {
-          if (valid.indexOf(this.number[i]) == -1) {
-              return false;
-          }
-      }
-      return true;
-  }
+    private label: string;
+    private number: string;
 
-  public isValid() {
-      ...
-  }
+    constructor(label: string, number: string) {
+        this.setLabel(label);
+        this.setNumber(number);
+    }
+
+    public getLabel() {
+        return this.label;
+    }
+
+    public getNumber() {
+        return this.number;
+    }
+
+    public setLabel(valor: string) {
+        this.label = valor;
+    }
+
+    public setNumber(valor: string) {
+        this.number = valor;
+    }
+
+    public valido(): boolean {
+        if (Fone.validacao(this.number)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    static validacao(fone: string): boolean {
+        let strings_validas = "0123456789()."
+        for (let i = 0; i < fone.length; i++) {
+            if (strings_validas.indexOf(fone[i]) == -1) {
+                console.log("esse número não é válido!")
+                return false
+            }
+        }
+        return true;
+    }
+    public toString(): string {
+        return `${this.label}: ${this.number}`
+    }
 }
 
 class Contato {
-  //private fones: Array<Fone>;
-  private nome: string;
-  private fones: Array<Fone>;
-  constructor(nome: string, fones:Array<Fone>) {
-      this.nome = nome;
-      this.fones = new Array<Fone>();
-      for (let fone of fones) {
-          this.addFone(fone);
-      }
-  }
+    constructor(private name: string, private fones: Array<Fone>) {
+    }
 
-  public toString(): string {
-      return this.nome + ":" + this.fones.join(",");
-  }
-  //valida o fone e insere se for válido
-  addFone(fone: Fone) {
-      //verificar se o telefone é válido antes de inserir
-  }
-  removeFone(index: number) {
-      //verificar se o index é válido antes de remover
-      this.fones.splice(index, 1);
-  }
+    public getName() {
+        return this.name;
+    }
 
-  setFones(fones: Array<Fone>) {
-      this.fones = [];
-      for(let fone of fones) {
-          this.addFone(fone);
-      }
-  }
+    public setName(name: string) {
+        this.name = name;
+    }
+
+    public getFones() {
+        return this.fones;
+    }
+
+    public setFones(fones: Array<Fone>) {
+        for (let i = 0; i < fones.length; i++) {
+            this.addFone(fones[i]);
+        }
+    }
+
+    public addFone(fone: Fone) {
+        if (fone.valido()) {
+            this.fones.push(fone);
+        }
+    }
+
+    public remove_fone(index: number) {
+        if (index < this.fones.length) {
+            this.fones.splice(index, 1);
+        } else {
+            console.log("O índice não existe!");
+        }
+    }
+
+    public toString() {
+        let saida = `- ${this.name}`;
+        for (let i = 0; i < this.fones.length; i++) {
+            saida += `[${this.fones.indexOf(this.fones[i])} : ${this.fones[i].getLabel()} : ${this.fones[i].getNumber()}]`
+        }
+        return saida;
+    }
 }
 
 class Agenda {
-  private contatos: Array<Contato>;
-  constructor() {
-      this.contatos = new Array<Contato>();
-  }
+    private contatos: Array<Contato>
 
-  //retorna posicao do contato no vetor ou -1
-  private findByName(nome: string): number {
-      return -1;
-  }
+    public constructor(contatos: Array<Contato>) {
+        this.contatos = contatos;
+    }
 
-  //-----------------------------------------------------
+    private findPos(name: string) {
+        for (let i = 0; i > this.contatos.length; i++) {
+            if (this.contatos[i].getName() == name) {
+                return i;
+            }
+        }
+        return -1;
+    }
 
-  public add(contato: Contato): void {
-      //todo: procura utilizando o findByName
-  
-      //todo: adicionar se não existir
-          //todo: depois de adicionar vai precisar ordenar
+    private findContact(name: string) {
+       
+    }
 
-      //se o contato com esse nome já existe, adicione os telefones
-  }
-  public remove(nome: string): void {
-      //procura utilizando o método findByName
-      //remove se existir utilizando o splite(pos, 1);
-      //não precisa ordenar depois de remover
-  }
-  public getContato(nome: string): Contato | null {
-      //procura utilizando o método findByName
-      //se contato existir, retorne o contato
-      //se não existir retorne null
-      return null;
-  }
-  public toString(): string {
-      return this.contatos.join("\n");
-  }
+    public addContato(contato: Contato) {
+      
+    }
+
+    public removeContato(contato: Contato) {
+   
+    }
+
+  //  public search(pattern: string): Array<Contato> {
+
+  //  }
+
+    public toString() {
+        let saida: string = ""
+        for (let i = 0; i < this.contatos.length; i++) {
+            saida += `${this.contatos[i]}`
+        }
+        return saida;
+    }
 }
 
-function main() {
-  let agenda = new Agenda();
-  while (true) {
-      let line = readline.question("");
-      let cmd = line.split(" ");
-      if (cmd[0] == "add") {
-          let contato = new Contato(cmd[1]);
-          agenda.add(contato);
-      } else if (cmd[0] == "remove") {
-          agenda.remove(cmd[1]);
-      } else if (cmd[0] == "get") {
-          let contato = agenda.getContato(cmd[1]);
-          if (contato != null) {
-              console.log(contato.toString());
-          } else {
-              console.log("Contato não encontrado");
-          }
-      } else if (cmd[0] == "show") {
-          console.log(agenda.toString());
-      } else if (cmd[0] == "exit") {
-          break;
-      }
-  }
-}
 
-main();
 
-let fone = new Fone("casa", "123banana");
-fone.isValid();
-
-let contato = new Contato("João", [fone, new Fone("oi", "(85)")]);
-//fone invalido
-contato.addFone(new Fone("casa", "123banana"));
